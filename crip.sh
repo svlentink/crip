@@ -14,27 +14,38 @@ echo "$ACTION python package(s) in $PYTHONDIR"
 TARGET=/tmp/crip-content
 rm -rf $TARGET 2>/dev/null || true
 
+
 if [[ "$ACTION" == "install" ]] || [[ "$ACTION" == "remove" ]]; then
   if ! which crget; then
-    curl -o /usr/local/bin/crget fixme-some-url
+    curl -o /usr/local/bin/crget https://raw.githubusercontent.com/svlentink/crip/master/crget.sh
+    chmod +x /usr/local/bin/crget
   fi
   crget "$IMAGETAG" "$TARGET"
+
   if [[ "$ACTION" == "install" ]]; then
     mv $TARGET/* $PYTHONDIR/
   fi
+
   if [[ "$ACTION" == "remove" ]]; then
     cd $TARGET
     for f in `find`; do
       rm -rf $PYTHONDIR/$f 2>/dev/null || true
     done
   fi
+
   rm -rf $TARGET
   exit 0
 fi
+
+
 if [[ "$ACTION" == "create" ]]; then
   if [ -z "$3" ]; then
     echo "Usage: $0 create my-python/data-container:latest file1.py somedir another.py module_x"
     exit 1
+  fi
+  if ! which crput; then
+    curl -o /usr/local/bin/crput https://raw.githubusercontent.com/svlentink/crip/master/crput.sh
+    chmod +x /usr/local/bin/crput
   fi
   echo "WARN not implemented yet"
 else
