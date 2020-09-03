@@ -5,9 +5,9 @@ if [ -z "$1" ]; then
   echo "Usage: $0 container/image:latest somefile.txt anotherdir etc.md"
 else
   IMAGETAG="$1"
-  shift;
+  shift
 fi
-if [ -n "$1" ]; then
+if [ -z "$1" ]; then
   echo "ERROR nothing provided to add to the container"
   exit 1
 fi

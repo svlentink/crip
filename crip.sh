@@ -1,25 +1,27 @@
 #!/bin/bash
 
-if [ -z "$2"]; then
+if [ -z "$2" ]; then
   echo "Usage: $0 [install|remove|create] some-python/data-container:latest"
   exit 1
 else
   ACTION="$1"
-  IMAGETAG="$2"
+  shift
+  IMAGETAG="$1"
+  shift
 fi
 
 PYTHONDIR="`python3 -c 'from sys import path;import re;r = re.compile(".*/python3\.\d+");p = list(filter(r.fullmatch,path))[0]; print(p)'`"
 echo "$ACTION python package(s) in $PYTHONDIR"
 
-TARGET=/tmp/crip-content
-rm -rf $TARGET 2>/dev/null || true
-
 
 if [[ "$ACTION" == "install" ]] || [[ "$ACTION" == "remove" ]]; then
-  if ! which crget; then
-    curl -o /usr/local/bin/crget https://raw.githubusercontent.com/svlentink/crip/master/crget.sh
+  if ! which crget >/dev/null; then
+    curl --silent -o /usr/local/bin/crget \
+        https://raw.githubusercontent.com/svlentink/crip/master/crget.sh
     chmod +x /usr/local/bin/crget
   fi
+  TARGET=/tmp/crip-content
+  rm -rf $TARGET 2>/dev/null || true
   crget "$IMAGETAG" "$TARGET"
 
   if [[ "$ACTION" == "install" ]]; then
@@ -39,15 +41,17 @@ fi
 
 
 if [[ "$ACTION" == "create" ]]; then
-  if [ -z "$3" ]; then
+  if [ -z "$1" ]; then
     echo "Usage: $0 create my-python/data-container:latest file1.py somedir another.py module_x"
     exit 1
   fi
-  if ! which crput; then
-    curl -o /usr/local/bin/crput https://raw.githubusercontent.com/svlentink/crip/master/crput.sh
+  if ! which crput >/dev/null; then
+    curl --silent -o /usr/local/bin/crput \
+        https://raw.githubusercontent.com/svlentink/crip/master/crput.sh
     chmod +x /usr/local/bin/crput
   fi
-  echo "WARN not implemented yet"
+  FILES="$@"
+  crput $IMAGETAG $FILES
 else
   echo "ERROR unknown option $ACTION"
   exit 1
