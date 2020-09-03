@@ -3,6 +3,14 @@
 We have `pip` "Pip Installs Packages",
 and this is `crip` Container Registry Installed Packages.
 
+## Install
+
+```shell
+curl --silent -o /usr/local/bin/crip \
+    https://raw.githubusercontent.com/svlentink/crip/master/crip.sh
+chmod +x /usr/local/bin/crip
+```
+
 ## Why?
 
 At multiple companies I encountered that they did not have
