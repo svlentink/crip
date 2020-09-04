@@ -15,8 +15,24 @@ which curl >/dev/null || (echo ERROR curl not found; exit 1)
 
 if ! which download-frozen-image >/dev/null; then
   curl --silent -o /usr/local/bin/download-frozen-image \
-      https://raw.githubusercontent.com/svlentink/moby/master/contrib/download-frozen-image-v2.sh
+      https://raw.githubusercontent.com/moby/moby/master/contrib/download-frozen-image-v2.sh
   chmod +x /usr/local/bin/download-frozen-image
+  if ! which go >/dev/null; then
+    if [[ "$USER" == "root" ]] && [ -f /etc/debian_version ]; then
+      apt install -y golang
+    else
+      echo "Please install golang first (apt install golang)"
+      exit 1
+    fi
+  fi
+  if ! which jq >/dev/null; then
+    if [[ "$USER" == "root" ]] && [ -f /etc/debian_version ]; then
+      apt install -y jq
+    else
+      echo "Please install jq first (apt install jq)"
+      exit 1
+    fi
+  fi
 fi
 
 rm -rf /tmp/frozen-image 2> /dev/null || true
