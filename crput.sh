@@ -16,11 +16,11 @@ ITEMS="$@"
 which docker >/dev/null || (echo ERROR docker not found; exit 1)
 
 DOCKERFILE=/tmp/crput.Dockerfile
-echo 'FROM scratch AS base' > $DOCKERFILE
+echo 'FROM scratch AS base'  > $DOCKERFILE
 for i in $ITEMS;do
-  echo "COPY $i /$i" >> $DOCKERFILE
+  echo "COPY $i /$i"        >> $DOCKERFILE
 done
-echo 'FROM scratch' >> $DOCKERFILE
+echo 'FROM scratch'         >> $DOCKERFILE
 echo 'COPY --from=base / /' >> $DOCKERFILE
 
 docker build -t "$IMAGETAG" -f $DOCKERFILE .

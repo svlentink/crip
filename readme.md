@@ -32,3 +32,39 @@ being able to retrieve data
 (without `docker` installed)
 from a container registry.
 
+## Layout
+
+### crip
+
+Wrapper around `crput` for `crip create`
+and `crget` for `crip [install|remove]`.
+
+It makes sure that when installing or removing it is done from the default Python library directory of your OS.
+
+Example using the container created with the `crput` example below;
+```shell
+crip install my_container_image:latest -req 'mv *.crt /etc/ssl/certs/'
+```
+Which will install the `requirements.txt` from the container
+(`-req` is a short hand for
+`'pip3 install -r requirements.txt;rm requirements.txt'`),
+move the certificate in the right place and makes the `my_python_lib` globally available in Python through
+`import my_python_lib`.
+
+
+### crput
+
+This is the only of the 3 that requires docker.
+What is basically does is package your files as an container image that only holds your designated files.
+Note that it only creates the image, you still need to `docker push`.
+
+An alternative is to do this manually in your CI/CD pipeline:
+```Dockerfile
+FROM scratch AS bundler
+COPY self-signed.crt /
+COPY my_python_lib.py /
+COPY requirements.txt /
+FROM scratch
+COPY --from=bundler / /
+```
+

@@ -23,6 +23,22 @@ if [[ "$ACTION" == "install" ]] || [[ "$ACTION" == "remove" ]]; then
   TARGET=/tmp/crip-content
   rm -rf $TARGET 2>/dev/null || true
   crget "$IMAGETAG" "$TARGET"
+  
+  cd "$TARGET"
+  # Examples of special_actions are:
+  # "mv *.crt /etc/ssl/certs/"
+  # "pip3 install -r requirements.txt;rm requirement.txt", for which we created the short hand '-req'
+  # Thus these actions are executed on the directory
+  # that holds the files that came out of the container image
+  for special_action in "$@"; do
+    if [[ "$special_action" == '-req' ]] && [[ "$ACTION" == "install" ]]; then
+      pip3 install -r requirements.txt
+      rm requirement.txt
+    else
+      $special_action
+    fi
+  done
+  cd -
 
   if [[ "$ACTION" == "install" ]]; then
     mv $TARGET/* $PYTHONDIR/
