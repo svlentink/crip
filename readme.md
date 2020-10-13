@@ -22,6 +22,14 @@ which can be used to store data:
 FROM scratch
 COPY my-content /
 ```
+or
+```Dockerfile
+FROM scratch AS firststage
+WORKDIR /etc/ssl/certs
+COPY *.crt /etc/ssl/certs/
+FROM scratch
+COPY --from=firststage / /
+```
 
 However, not every environment comes with the option to run container
 (e.g. WSL 1 or CDSW),

@@ -31,9 +31,20 @@ if [[ "$ACTION" == "install" ]] || [[ "$ACTION" == "remove" ]]; then
   # Thus these actions are executed on the directory
   # that holds the files that came out of the container image
   for special_action in "$@"; do
-    if [[ "$special_action" == '-req' ]] && [[ "$ACTION" == "install" ]]; then
-      pip3 install -r requirements.txt
-      rm requirement.txt
+    if ( [[ "$special_action" == '-req' ]] || [[ "$special_action" == '-apt' ]] ) && [[ "$ACTION" == "install" ]]; then
+      if [[ "$special_action" == '-req' ]]; then
+        echo "Got -req, installing pip3 requirements.txt"
+        pip3 install -r requirements.txt
+        rm requirement.txt
+      else
+        echo "Got -apt, installing apt.txt"
+        for l in `cat apt.txt`; do
+          if [ -n "$l" ]; then
+            apt install -y $l
+          fi
+        done
+        rm apt.txt
+      fi
     else
       $special_action
     fi
